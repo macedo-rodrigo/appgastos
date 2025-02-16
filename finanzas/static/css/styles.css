@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* Ajuste global del tamaño de la fuente */
+html, body {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    background-color: #f4f4f4;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilos del Header */
+.header {
+    background: linear-gradient(135deg, #b22222, #d9534f);
+    padding: 14px 25px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 25px;
+}
+
+.navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 14px;
+    border-radius: 5px;
+    transition: background 0.3s ease-in-out;
+}
+
+.navbar ul li a:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ✅ Estilo mejorado del Botón Editar */
+.admin-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #b22222;
+    border: 2px solid #b22222;
+    background: transparent;
+    border-radius: 6px;
+    margin-right: 50px;
+    transition: all 0.3s ease-in-out;
+}
+
+.admin-btn:hover {
+    background: #b22222;
+    color: white;
+}
+
+/* ✅ Ajuste del contenedor principal */
+.full-page {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 98%; /* Aumentar ancho total */
+    max-width: 1600px;
+    height: 90vh;
+    gap: 30px; /* Más espacio entre secciones */
+}
+
+/* ✅ Ajuste de las tres secciones para ocupar más espacio y mejorar estética */
+.left-section, .middle-section, .right-section {
+    height: 85vh;
+    background: white;
+    padding: 2%;
+    border-radius: 12px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.left-section {
+    flex: 2;
+    border-left: 6px solid #b22222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.middle-section {
+    flex: 1.7;
+    border-left: 6px solid #0275d8;
+}
+
+.chart-container {
+    margin-bottom: 25px; /* Aumenta la separación entre gráficos */
+}
+
+.right-section {
+    flex: 1.7;
+    border-left: 6px solid #28a745;
+}
+
+/* ✅ Ajuste para Lista de Compras */
+.right-section h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.tabla-lista-compras {
+    width: 100%;
+    font-size: 12px;
+}
+
+.tabla-lista-compras th {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+}
+
+/* ✅ Ajustes en la tabla de gastos */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+table th {
+    background-color: #b22222;
+    color: white;
+}
+
+/* ✅ Gastos pagados con fondo verde pastel */
+tr.paid {
+    background-color: rgba(144, 238, 144, 0.3); /* Verde pastel transparente */
+}
+
+/* ✅ Botón para ocultar gastos pagados */
+.toggle-paid {
+    margin: 10px;
+    padding: 8px 12px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.toggle-paid:hover {
+    background-color: #b22222;
+}
+
+/* Diseño responsivo */
+@media (max-width: 900px) {
+    .content-wrapper {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .left-section, .middle-section, .right-section {
+        width: 95%;
+        height: auto;
+        margin-bottom: 15px;
+    }
+}

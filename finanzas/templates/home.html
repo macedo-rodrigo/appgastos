@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Gastos y Ahorros</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <ul>
+                <li><a href="/">🏠 Home</a></li>
+                <li><a href="/gastos/">💰 Gastos</a></li>
+                <li><a href="/ingresos/">📈 Ingresos</a></li>
+                <li><a href="/ahorros/">💾 Ahorros</a></li>
+                <li><a href="/lista/">📝 Lista Súper</a></li>
+            </ul>
+        </nav>
+        <a href="/admin/" class="admin-btn">Editar</a>
+    </header>
+
+    <div class="full-page">
+        <div class="content-wrapper">
+            <!-- Sección Izquierda (Gastos) -->
+            <div class="left-section">
+                <h2>Resumen de {{ mes_seleccionado_nombre }}</h2>
+                <form method="GET">
+                    <label for="mes"><strong>Seleccionar mes:</strong></label>
+                    <select name="mes" id="mes" onchange="this.form.submit()">
+                        {% for numero, nombre in lista_meses %}
+                            <option value="{{ numero }}" {% if numero == mes_seleccionado %}selected{% endif %}>
+                                {{ nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+
+                <p class="summary">Deuda del mes: <span class="amount">{{ total_gastado }}€</span></p>
+
+                <!-- Botón para ocultar gastos pagados -->
+                <button class="toggle-paid" onclick="togglePagados()">Ocultar lo pagado</button>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gasto in gastos_por_categoria %}
+                            <tr class="{% if gasto.pagos_pendientes == 0 %}paid{% endif %}">
+                                <td>{{ gasto.categoria__nombre }}</td>
+                                <td>{{ gasto.total }}€</td>
+                                <td class="status {% if gasto.pagos_pendientes > 0 %}pending{% else %}paid{% endif %}">
+                                    {% if gasto.pagos_pendientes > 0 %}Pendiente{% else %}Pagado{% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No hay gastos registrados para este mes.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <p class="summary">Pago Betty: <span class="amount">{{ total_ahorrado }}€ de 2000€ </span></p>
+            </div>
+
+            <!-- Sección Media (Gráficos) -->
+            <div class="middle-section">
+                <h2>Visualización de Gastos</h2>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sección Derecha (Lista de Compras) -->
+            <div class="right-section">
+                <h2>Lista de Compras</h2>
+                <table class="tabla-lista-compras">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in lista_compras %}
+                            <tr>
+                                <td>{{ item.nombre }}</td>
+                                <td>{{ item.cantidad }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="2">No hay productos en la lista.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            try {
+                // Obtener los datos desde Django
+                var categorias = JSON.parse('{{ categorias_json|escapejs }}');
+                var montos = JSON.parse('{{ montos_json|escapejs }}');
+    
+                console.log("Categorías:", categorias);
+                console.log("Montos:", montos);
+    
+                if (!categorias.length || !montos.length) {
+                    console.warn("No hay datos para mostrar en los gráficos.");
+                    return;
+                }
+    
+                // Configuración de la gráfica de barras
+                var barChartCanvas = document.getElementById("barChart").getContext("2d");
+                new Chart(barChartCanvas, {
+                    type: "bar",
+                    data: {
+                        labels: categorias,
+                        datasets: [{
+                            label: "Gastos por Categoría",
+                            data: montos,
+                            backgroundColor: "rgba(178, 34, 34, 0.6)", 
+                            borderColor: "rgba(178, 34, 34, 1)",
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+    
+                // Configuración de la gráfica de pastel
+                var pieChartCanvas = document.getElementById("pieChart").getContext("2d");
+                new Chart(pieChartCanvas, {
+                    type: "doughnut",
+                    data: {
+                        labels: categorias,
+                        datasets: [{
+                            label: "Distribución de Gastos",
+                            data: montos,
+                            backgroundColor: [
+                                "#B22222", "#0275D8", "#5CB85C", "#F0AD4E", "#5BC0DE",
+                                "#D9534F", "#292B2C", "#A569BD", "#C0392B", "#28B463"
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+    
+            } catch (error) {
+                console.error("Error al generar los gráficos:", error);
+            }
+        });
+
+        // Función para ocultar/mostrar gastos pagados
+        function togglePagados() {
+            const filasPagadas = document.querySelectorAll("tr.paid");
+            filasPagadas.forEach(fila => {
+                fila.style.display = (fila.style.display === "none") ? "table-row" : "none";
+            });
+
+            const btn = document.querySelector(".toggle-paid");
+            btn.textContent = btn.textContent.includes("Ocultar") ? "Mostrar todo" : "Ocultar lo pagado";
+        }
+    </script>    
+</body>
+</html>
