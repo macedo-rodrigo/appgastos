@@ -1,3 +1,7 @@
 {
+<<<<<<< HEAD
   "git.ignoreLimitWarning": true
+=======
+  "git.ignoreLimitWarning": false
+>>>>>>> b501964 (First commit)
 }
