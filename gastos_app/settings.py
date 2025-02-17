@@ -55,7 +55,11 @@ WSGI_APPLICATION = 'gastos_app.wsgi.application'
 
 # ✅ BASE_DIR debe estar definido antes de usarse en la configuración de la base de datos
 DATABASES = {
-    'default': dj_database_url.config(default=f"sqlite:///{BASE_DIR}/db.sqlite3")
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR}/db.sqlite3"),
+        conn_max_age=600,
+        ssl_require=False  # 🔴 Cambia a False si hay errores de SSL
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
