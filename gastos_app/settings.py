@@ -5,9 +5,9 @@ import dj_database_url  # ✅ Asegurar que dj_database_url esté importado
 # ✅ BASE_DIR DEBE SER DEFINIDO ANTES DE USARSE
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-@y0!tt5-l2hk3hn3h%^p!+p-7n_#vbq+g7b@^@oahrak0x78o-'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-@y0!tt5-l2hk3hn3h%^p!+p-7n_#vbq+g7b@^@oahrak0x78o-")
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -17,11 +17,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'whitenoise.runserver_nostatic',  # ✅ Whitenoise para servir archivos estáticos en producción
     'finanzas',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ Middleware para servir archivos estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -69,5 +71,13 @@ USE_I18N = True
 USE_TZ = True
 DATE_FORMAT = "d/m/y"
 
-STATIC_URL = 'static/'
+# ✅ Configuración correcta de archivos estáticos
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "finanzas/static"]  # ✅ Carpeta donde están los archivos estáticos en desarrollo
+STATIC_ROOT = BASE_DIR / "staticfiles"  # ✅ Carpeta donde se almacenan los archivos estáticos en producción
+
+# ✅ Configuración de archivos estáticos en producción
+if not DEBUG:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
